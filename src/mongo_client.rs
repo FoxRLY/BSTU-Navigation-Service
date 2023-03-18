@@ -25,7 +25,7 @@ struct CampusImage{
 /// - Заполняет базу отформатированными данными об аудиториях и картинках
 /// - Выдает список всех аудиторий
 /// - Выдает данные о местоположении аудиторий
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DBClient{
     inner_client: Client,
     database_name: String,
