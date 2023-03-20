@@ -9,14 +9,14 @@ use futures::stream::TryStreamExt;
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 struct ClassroomData{
     classroom: String,
-    description: String,
     images: Vec<String>,
+    description: String,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
 struct CampusImage{
-    image_name: String,
-    image: String,
+    name: String,
+    value: String,
 }
 
 /// Клиент Монго-базы для сервиса навигации
@@ -25,7 +25,7 @@ struct CampusImage{
 /// - Заполняет базу отформатированными данными об аудиториях и картинках
 /// - Выдает список всех аудиторий
 /// - Выдает данные о местоположении аудиторий
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct DBClient{
     inner_client: Client,
     database_name: String,
@@ -45,8 +45,8 @@ impl DBClient{
     /// в контейнер.
     pub async fn new(classroom_data: String, image_data: String) -> Result<Self, Box<dyn Error>> {
         let credentials = Credential::builder()
-            .username(env::var("MONGODB_USERNAME").unwrap_or("biba".to_owned()))
-            .password(env::var("MONGODB_PASSWORD").unwrap_or("boba".to_owned()))
+            .username(env::var("MONGODB_USERNAME").unwrap_or("username".to_owned()))
+            .password(env::var("MONGODB_PASSWORD").unwrap_or("password".to_owned()))
             .build();
         let options = ClientOptions::builder()
             .credential(credentials)
@@ -103,7 +103,7 @@ impl DBClient{
         let classroom_images = self.get_campus_images(&needed_classroom.images).await?;
         let classroom_images: Vec<String> = classroom_images
             .into_iter()
-            .map(|elem|elem.image)
+            .map(|elem|elem.value)
             .collect();
         needed_classroom.images = classroom_images;
         let result = serde_json::to_string(needed_classroom)?;
@@ -135,7 +135,7 @@ impl DBClient{
 
         let needed_images: Vec<CampusImage> = images
             .into_iter()
-            .filter(|image|{image_names.contains(&image.image_name)})
+            .filter(|image|{image_names.contains(&image.name)})
             .collect();
         if needed_images.len() < 1{
             return Err(Box::new(ErrorNotFound("No images found")));
