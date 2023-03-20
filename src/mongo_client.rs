@@ -110,6 +110,16 @@ impl DBClient{
         Ok(result)
     }
 
+    pub async fn get_general_map(&self) -> Result<String, Box<dyn Error>> {
+        let general_images = self.get_campus_images(&vec!["general_map.png".to_owned()]).await?;
+        let general_images: Vec<String> = general_images
+            .into_iter()
+            .map(|elem|elem.value)
+            .collect();
+        let result = serde_json::to_string(&general_images)?;
+        Ok(result)
+    }
+
     /// Проверка подключения клиента к базе
     async fn ping(&self) -> Result<(), Box<dyn Error>> {
         self.inner_client
