@@ -6,3 +6,10 @@
 ## Как Запустить?
 1) Прописать "docker compose build"
 2) Запустить через "docker compose up"
+
+## API:
+- /map = [str] | Выдает общую карту БГТУ
+- /classroomlist = [str] | Выдает список всех аудиторий БГТУ
+- /classroom?name=имя_аудитории = {classroom: str, images: [str], description: str} | Выдает описание и картинки для аудитории
+
+Все картинки закодированы в Base64
