@@ -39,6 +39,15 @@ async fn get_classroom_data(query: web::Query<ClassroomDataRequest>, db_client: 
     }
 }
 
+#[get("/map")]
+async fn get_general_map(db_client: web::Data<Mutex<DBClient>>) -> impl Responder {
+    let db_client = db_client.lock().unwrap();
+    match db_client.get_general_map().await {
+        Ok(val) => {HttpResponse::Ok().body(val)},
+        Err(e) => {HttpResponse::NotFound().body(format!("Error: general map not available\nReason:{:?}", e))}
+    }
+}
+
 pub struct Server{
     host: String,
     port: u16,
